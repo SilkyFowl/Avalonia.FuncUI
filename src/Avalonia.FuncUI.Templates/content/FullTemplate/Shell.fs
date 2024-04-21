@@ -37,16 +37,14 @@ module Shell =
     type MainWindow() as this =
         inherit HostWindow()
         do
-            base.Title <- "Full App"
+            base.Title <- "FullTemplate"
             base.Width <- 800.0
             base.Height <- 600.0
             base.MinWidth <- 800.0
             base.MinHeight <- 600.0
             this.Content <- view
-
-            //this.VisualRoot.VisualRoot.Renderer.DrawFps <- true
-            //this.VisualRoot.VisualRoot.Renderer.DrawDirtyRects <- true
+//-:cnd
 #if DEBUG
             this.AttachDevTools(KeyGesture(Key.F12))
 #endif
-
+//+:cnd

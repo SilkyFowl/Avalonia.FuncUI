@@ -7,20 +7,24 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: macos-13
 
     steps:
-    - uses: actions/checkout@v2
+    - name: xCode
+      run: sudo xcode-select -s /Applications/Xcode_15.1.app/Contents/Developer/
+
+    - uses: actions/checkout@v4
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: |
-          6.0.x
-          7.0.x
-    - name: Restore workload
-      run: |
-        cd src 
-        dotnet workload restore
+          6.x.x
+          7.x.x
+
+    - name: install workloads
+      run: dotnet workload restore src/Avalonia.FuncUI.sln
+
     - name: Restore dependencies
       run: dotnet restore src/Avalonia.FuncUI.sln
     - name: Build
@@ -28,4 +32,4 @@ jobs:
     - name: Test
       run: dotnet test src/Avalonia.FuncUI.sln --no-build --verbosity normal
 
-      
+

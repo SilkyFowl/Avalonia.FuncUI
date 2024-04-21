@@ -7,7 +7,7 @@
     "UI",
     "Elmish"
   ],
-  "name": "Avalonia FuncUI App",
+  "name": "Avalonia FuncUI MVU Basic App",
   "tags": {
     "language": "F#",
     "type": "project"

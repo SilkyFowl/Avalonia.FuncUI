@@ -35,7 +35,9 @@ trim_trailing_whitespace=true
 insert_final_newline=false
 
 [*.fs]
-fsharp_single_argument_web_mode=true
+fsharp_newline_between_type_definition_and_members = false
+fsharp_multiline_bracket_style = stroustrup
+fsharp_newline_before_multiline_computation_expression = false
 ```
 
 This should will allow Fantomas to format your code on save.
@@ -45,6 +47,7 @@ Other editors like Rider and Visual Studio [F# Formatting] can also pick up thes
 ### Feeling a little lost?
 
 Check out the documentation:
-https://avaloniacommunity.github.io/Avalonia.FuncUI.Docs/
+
+https://funcui.avaloniaui.net/
 
 The documentation is still work in progress and will change over the next few months, but feel free to contribute and ask questions if needed.

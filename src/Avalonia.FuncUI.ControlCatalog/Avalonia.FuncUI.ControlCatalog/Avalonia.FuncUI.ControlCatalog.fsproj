@@ -5,7 +5,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Include="Library\Extensions.fs" />
         <Compile Include="Views\Tabs\ToggleSwitchDemo.fs" />
         <Compile Include="Views\Tabs\SpinnerDemo.fs" />
         <Compile Include="Views\Tabs\TreeViewDemo.fs" />
@@ -14,6 +13,7 @@
         <Compile Include="Views\Tabs\WrapPanelDemo.fs" />
         <Compile Include="Views\Tabs\DataTemplateDemo.fs" />
         <Compile Include="Views\Tabs\GridDemo.fs" />
+        <Compile Include="Views\Tabs\GridSplitterDemo.fs" />
         <Compile Include="Views\Tabs\CanvasDemo.fs" />
         <Compile Include="Views\Tabs\ContextMenuDemo.fs" />
         <Compile Include="Views\Tabs\StylesDemo.fs" />
@@ -26,6 +26,7 @@
         <Compile Include="Views\Tabs\TickBarDemo.fs" />
         <Compile Include="Views\Tabs\WindowMenuDemo.fs" />
         <Compile Include="Views\Tabs\FlyoutDemo.fs" />
+        <Compile Include="Views\Tabs\DragDropDemo.fs" />
         <Compile Include="Views\MainView.fs" />
 		<Compile Include="ControlCatalog.fs" />
         <AvaloniaResource Include="**\*.xaml" />

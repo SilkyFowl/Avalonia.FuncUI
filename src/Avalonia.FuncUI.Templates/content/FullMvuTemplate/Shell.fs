@@ -10,8 +10,8 @@ module Shell =
     open Avalonia
     open Avalonia.Controls
     open Avalonia.Input
-    open Avalonia.FuncUI.DSL
     open Avalonia.FuncUI
+    open Avalonia.FuncUI.DSL
     open Avalonia.FuncUI.Builder
     open Avalonia.FuncUI.Hosts
     open Avalonia.FuncUI.Elmish
@@ -52,17 +52,22 @@ module Shell =
             Cmd.none
 
     let view (state: State) (dispatch) =
-        DockPanel.create
-            [ DockPanel.children
-                [ TabControl.create
-                    [ TabControl.tabStripPlacement Dock.Top
-                      TabControl.viewItems
-                          [ TabItem.create
-                                [ TabItem.header "Counter Sample"
-                                  TabItem.content (Counter.view state.counterState (CounterMsg >> dispatch)) ]
-                            TabItem.create
-                                [ TabItem.header "About"
-                                  TabItem.content (About.view state.aboutState (AboutMsg >> dispatch)) ] ] ] ] ]
+        DockPanel.create [
+            DockPanel.children [
+                TabControl.create [
+                    TabControl.tabStripPlacement Dock.Top
+                    TabControl.viewItems [
+                        TabItem.create [
+                            TabItem.header "Counter Sample"
+                            TabItem.content (Counter.view state.counterState (CounterMsg >> dispatch)) ]
+                        TabItem.create [
+                            TabItem.header "About"
+                            TabItem.content (About.view state.aboutState (AboutMsg >> dispatch))
+                        ]
+                    ]
+                ]
+            ]
+        ]
 
     /// This is the main window of your application
     /// you can do all sort of useful things here like setting heights and widths
@@ -71,21 +76,22 @@ module Shell =
     type MainWindow() as this =
         inherit HostWindow()
         do
-            base.Title <- "Full App"
+            base.Title <- "FullMvuTemplate"
             base.Width <- 800.0
             base.Height <- 600.0
             base.MinWidth <- 800.0
             base.MinHeight <- 600.0
-
-            //this.VisualRoot.VisualRoot.Renderer.DrawFps <- true
-            //this.VisualRoot.VisualRoot.Renderer.DrawDirtyRects <- true
+//-:cnd
 #if DEBUG
             this.AttachDevTools(KeyGesture(Key.F12))
 #endif
+//+:cnd
 
             Elmish.Program.mkProgram init update view
             |> Program.withHost this
+//-:cnd
 #if DEBUG
             |> Program.withConsoleTrace
 #endif
+//+:cnd
             |> Program.run

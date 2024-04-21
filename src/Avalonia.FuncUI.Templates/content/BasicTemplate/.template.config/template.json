@@ -7,7 +7,7 @@
     "UI",
     "Components"
   ],
-  "name": "Avalonia FuncUI App",
+  "name": "Avalonia FuncUI Component Basic App",
   "tags": {
     "language": "F#",
     "type": "project"

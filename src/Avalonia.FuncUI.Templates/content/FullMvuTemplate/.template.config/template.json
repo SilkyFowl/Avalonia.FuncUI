@@ -7,13 +7,13 @@
     "UI",
     "Elmish"
   ],
-  "name": "Avalonia FuncUI App (with extras)",
+  "name": "Avalonia FuncUI MVU App (with extras)",
   "tags": {
     "language": "F#",
     "type": "project"
   },
   "identity": "Avalonia.FuncUI.FullMvuTemplate",
-  "shortName": "funcUI.full.mvu",
+  "shortName": "funcui.full.mvu",
   "sourceName": "FullMvuTemplate",
   "preferNameDirectory": true
 }

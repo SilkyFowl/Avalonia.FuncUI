@@ -11,7 +11,7 @@ type App() =
     inherit Application()
 
     override this.Initialize() =
-        this.Styles.Add (FluentTheme(baseUri = null, Mode = FluentThemeMode.Dark))
+        this.Styles.Add (FluentTheme())
         this.Styles.Load "avares://FullTemplate/Styles.xaml"
 
     override this.OnFrameworkInitializationCompleted() =

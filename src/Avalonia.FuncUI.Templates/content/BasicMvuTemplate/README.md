@@ -45,6 +45,7 @@ Other editors like Rider and Visual Studio [F# Formatting] can also pick up thes
 ### Feeling a little lost?
 
 Check out the documentation:
-https://avaloniacommunity.github.io/Avalonia.FuncUI.Docs/
+
+https://funcui.avaloniaui.net/
 
 The documentation is still work in progress and will change over the next few months, but feel free to contribute and ask questions if needed.

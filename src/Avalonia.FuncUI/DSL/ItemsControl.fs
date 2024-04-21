@@ -1,5 +1,7 @@
 namespace Avalonia.FuncUI.DSL
 
+open Avalonia
+
 [<AutoOpen>]
 module ItemsControl =
     open Avalonia.Controls.Templates
@@ -14,10 +16,11 @@ module ItemsControl =
     type ItemsControl with
 
         static member viewItems<'t when 't :> ItemsControl>(views: IView list) : IAttr<'t> =
-            AttrBuilder<'t>.CreateContentMultiple(ItemsControl.ItemsProperty, views)
+            let getter : ('t -> obj) = (fun control -> control.Items :> obj)
+            AttrBuilder<'t>.CreateContentMultiple("Items", ValueSome getter, ValueNone, views)
 
         static member dataItems<'t when 't :> ItemsControl>(data: IEnumerable) : IAttr<'t> =
-            AttrBuilder<'t>.CreateProperty<IEnumerable>(ItemsControl.ItemsProperty, data, ValueNone)
+            AttrBuilder<'t>.CreateProperty<IEnumerable>(ItemsControl.ItemsSourceProperty, data, ValueNone)
 
         static member itemsPanel<'t when 't :> ItemsControl>(value: ITemplate<Panel>) : IAttr<'t> =
             AttrBuilder<'t>.CreateProperty<ITemplate<Panel>>(ItemsControl.ItemsPanelProperty, value, ValueNone)
@@ -26,4 +29,8 @@ module ItemsControl =
             AttrBuilder<'t>.CreateProperty<IDataTemplate>(ItemsControl.ItemTemplateProperty, value, ValueNone)
 
         static member onItemsChanged<'t when 't :> ItemsControl>(func: IEnumerable -> unit, ?subPatchOptions) =
-            AttrBuilder<'t>.CreateSubscription<IEnumerable, _>(ItemsControl.ItemsProperty, func, ?subPatchOptions = subPatchOptions)
+            AttrBuilder<'t>.CreateSubscription(
+                ItemsControl.ItemsSourceProperty :> AvaloniaProperty<IEnumerable>,
+                func,
+                ?subPatchOptions = subPatchOptions
+            )

@@ -4,6 +4,7 @@ open Avalonia
 open Avalonia.Controls
 open Avalonia.Controls.ApplicationLifetimes
 open Avalonia.Controls.Shapes
+open Avalonia.FuncUI.Experimental
 open Avalonia.FuncUI.Hosts
 open Avalonia.FuncUI.Types
 open Avalonia.Layout
@@ -11,13 +12,14 @@ open Avalonia.Media
 open Avalonia.Themes.Fluent
 open Avalonia.FuncUI
 open Avalonia.FuncUI.DSL
+
 #nowarn "57"
 
 [<RequireQualifiedAccess>]
 module SharedState =
 
-    let brush = EnvironmentState<IBrush>.Create "brush"
-    let size = EnvironmentState<int>.Create "size"
+    let brush = EnvironmentState<IWritable<IBrush>>.Create "brush"
+    let size = EnvironmentState<IWritable<int>>.Create "size"
 
 [<AbstractClass; Sealed>]
 type Views =
@@ -200,7 +202,7 @@ type Views =
 type MainWindow() as this =
     inherit HostWindow()
     do
-        base.Title <- "Drawing App"
+        base.Title <- "Environment App"
         base.Width <- 500.0
         base.Height <- 500.0
         this.Content <- Views.main ()

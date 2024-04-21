@@ -1,14 +1,14 @@
-﻿namespace rec Avalonia.FuncUI
+﻿namespace Avalonia.FuncUI
 
 open Avalonia
 open Avalonia.Controls
 open System
 open System.Threading
-open Avalonia.Data
+open System.Diagnostics.CodeAnalysis
 
-module Types =
+module rec Types =
 
-    [<CustomEquality; NoComparison>]
+    [<CustomEquality; NoComparison; Struct>]
     type PropertyAccessor =
         { Name: string
           Getter: (AvaloniaObject -> obj) voption
@@ -83,14 +83,18 @@ module Types =
         { Function: obj -> unit }
 
         override this.Equals (obj: obj) =
-            false
+            Object.ReferenceEquals (this, obj)
+
+        override this.GetHashCode () =
+            (this.Function :> obj).GetHashCode()
 
     type IAttr =
         abstract member UniqueName : string
-        abstract member Property : Property option
-        abstract member Content : Content option
-        abstract member Subscription : Subscription option
-        abstract member InitFunction: InitFunction option
+
+        abstract member Property : Property voption
+        abstract member Content : Content voption
+        abstract member Subscription : Subscription voption
+        abstract member InitFunction: InitFunction voption
 
     type IAttr<'viewType> =
         inherit IAttr
@@ -124,23 +128,23 @@ module Types =
 
             member this.Property =
                 match this with
-                | Property value -> Some value
-                | _ -> None
+                | Property value -> ValueSome value
+                | _ -> ValueNone
 
             member this.Content =
                 match this with
-                | Content value -> Some value
-                | _ -> None
+                | Content value -> ValueSome value
+                | _ -> ValueNone
 
             member this.Subscription =
                 match this with
-                | Subscription value -> Some value
-                | _ -> None
+                | Subscription value -> ValueSome value
+                | _ -> ValueNone
 
             member this.InitFunction =
                 match this with
-                | InitFunction value -> Some value
-                | _ -> None
+                | InitFunction value -> ValueSome value
+                | _ -> ValueNone
 
     type IView =
         abstract member ViewType: Type with get
@@ -149,11 +153,11 @@ module Types =
         abstract member ConstructorArgs: obj array with get
         abstract member Outlet: (AvaloniaObject -> unit) voption with get
 
-    type IView<'viewType> =
+    type IView<[<DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)>]'viewType> =
         inherit IView
         abstract member Attrs: IAttr<'viewType> list with get
 
-    type View<'viewType> =
+    type View<[<DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)>]'viewType> =
         { ViewType: Type
           ViewKey: string voption
           Attrs: IAttr<'viewType> list
@@ -174,14 +178,18 @@ module Types =
 
     // TODO: maybe move active patterns to Virtual DON Misc
 
-    let internal (|Property'|_|) (attr: IAttr)  =
+    [<return: Struct>]
+    let internal (|Property'|_|) (attr: IAttr) : Property voption =
         attr.Property
 
-    let internal (|Content'|_|) (attr: IAttr)  =
+    [<return: Struct>]
+    let internal (|Content'|_|) (attr: IAttr) : Content voption =
         attr.Content
 
-    let internal (|Subscription'|_|) (attr: IAttr)  =
+    [<return: Struct>]
+    let internal (|Subscription'|_|) (attr: IAttr)  : Subscription voption =
         attr.Subscription
 
-    let internal (|InitFunction|_|) (attr: IAttr) =
+    [<return: Struct>]
+    let internal (|InitFunction|_|) (attr: IAttr) : InitFunction voption =
         attr.InitFunction

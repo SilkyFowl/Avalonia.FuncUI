@@ -8,9 +8,9 @@ module Simulator =
   let canEnterActorCell actor target =
     match target with
     | Rabbit | Squirrel _ -> actor = Doggo // Dog can eat the squirrel or rabbit
-    | Doggo _ -> false // Nobody bugs the dog
-    | Tree _ -> actor = Squirrel true // Only allow if squirrel has an acorn
-    | Acorn _ -> actor = Squirrel false // Only allow if squirrel w/o acorn
+    | Doggo -> false // Nobody bugs the dog
+    | Tree -> actor = Squirrel true // Only allow if squirrel has an acorn
+    | Acorn -> actor = Squirrel false // Only allow if squirrel w/o acorn
 
   let moveActor state actor pos =
     let world = state.World
@@ -26,34 +26,44 @@ module Simulator =
 
     let handleDogMove state otherActor =
       if otherActor.ActorKind = Rabbit then
-        {
-          state with World = {world with
-          Rabbit = {world.Rabbit with IsActive = false}
-          Doggo = {world.Doggo with Pos = pos}
-        }}
+        { state with
+            World =
+            { world with
+                Rabbit = { world.Rabbit with IsActive = false }
+                Doggo = { world.Doggo with Pos = pos }
+            }
+        }
       else
-        {
-          state with SimState = SimulationState.Lost; World = {world with
-          Squirrel = {world.Squirrel with IsActive = false}
-          Doggo = {world.Doggo with Pos = pos}
-        }}
+        { state with
+            SimState = SimulationState.Lost
+            World =
+            { world with
+                Squirrel = { world.Squirrel with IsActive = false }
+                Doggo = { world.Doggo with Pos = pos }
+            }
+        }
 
     let handleSquirrelMove otherActor hasAcorn =
       if not hasAcorn && otherActor.ActorKind = Acorn && otherActor.IsActive then
         // Moving to the acorn for the first time should give the squirrel the acorn
-        {state with World =
-          {
-            world with
-            Squirrel = {ActorKind = Squirrel true; Pos = pos; IsActive = true}
-            Acorn = {world.Acorn with IsActive = false}
-          }
+        { state with
+            World =
+            {
+              world with
+                Squirrel = { ActorKind = Squirrel true; Pos = pos; IsActive = true }
+                Acorn = { world.Acorn with IsActive = false }
+            }
         }
       else if hasAcorn && otherActor.ActorKind = Tree then
         // Moving to the tree with the acorn - this should win the game
         {
-          state with SimState = SimulationState.Won; World = {
-            world with Squirrel = {ActorKind = Squirrel true; Pos = pos; IsActive = true}
-          }
+          state with
+            SimState = SimulationState.Won
+            World =
+            {
+              world with
+                Squirrel = { ActorKind = Squirrel true; Pos = pos; IsActive = true }
+            }
         }
       else
         performMove

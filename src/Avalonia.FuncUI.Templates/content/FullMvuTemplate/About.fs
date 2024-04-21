@@ -59,8 +59,7 @@ module About =
                     TextBlock.classes [ "subtitle" ]
                     TextBlock.text (
                         "Avalonia.FuncUI is a project that provides you with an Elmish DSL for Avalonia Controls\n" + 
-                        "for you to use in an F# idiomatic way. We hope you like the project and spread the word :)\n" +
-                        "Questions ? Reach to us on Gitter, also check the links below"
+                        "for you to use in an F# idiomatic way. We hope you like the project and spread the word :)\n"
                     )
                 ]
             ]

@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Compile Include="ModalHost.fs" />
+        <Compile Include="Program.fs" />
+        <AvaloniaResource Include="Assets\Icons\edit.png" />
+        <AvaloniaResource Include="Assets\Icons\trash.png" />
+        <AvaloniaResource Include="Assets\Icons\plus.png" />
+        <AvaloniaResource Include="Assets\Icons\show.png" />
+        <AvaloniaResource Include="Assets\Icons\hide.png" />
+        <AvaloniaResource Include="Assets\Icons\save.png" />
+        <AvaloniaResource Include="Assets\Icons\dog.svg" />
+    </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="$(AvaloniaVersion)" />
+        <PackageReference Include="Avalonia.Desktop" Version="$(AvaloniaVersion)" />
+        <PackageReference Include="Avalonia.Svg.Skia" Version="11.0.0.3" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
+        <ProjectReference Include="..\..\..\Avalonia.FuncUI\Avalonia.FuncUI.fsproj" />
+    </ItemGroup>
+</Project>

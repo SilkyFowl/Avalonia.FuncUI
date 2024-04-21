@@ -12,19 +12,19 @@ module Flyout =
     let create (attrs: IAttr<Flyout> list): IView<Flyout> =
         ViewBuilder.Create<Flyout>(attrs)
 
-    type FlyoutBase with
+    type PopupFlyoutBase with
 
         /// <summary>
         /// A value indicating how the flyout is positioned.
         /// </summary>
-        static member placement<'t when 't :> FlyoutBase>(value: FlyoutPlacementMode) : IAttr<'t> =
-            AttrBuilder<'t>.CreateProperty<FlyoutPlacementMode>(FlyoutBase.PlacementProperty, value, ValueNone)
+        static member placement<'t when 't :> FlyoutBase>(value: PlacementMode) : IAttr<'t> =
+            AttrBuilder<'t>.CreateProperty<PlacementMode>(PopupFlyoutBase.PlacementProperty, value, ValueNone)
 
         /// <summary>
         /// A value indicating flyout show mode.
         /// </summary>
         static member showMode<'t when 't :> FlyoutBase>(value: FlyoutShowMode) : IAttr<'t> =
-            AttrBuilder<'t>.CreateProperty<FlyoutShowMode>(FlyoutBase.ShowModeProperty, value, ValueNone)
+            AttrBuilder<'t>.CreateProperty<FlyoutShowMode>(PopupFlyoutBase.ShowModeProperty, value, ValueNone)
 
     type Flyout with
         static member content<'t when 't :> Flyout>(value: IView option) : IAttr<'t> =
@@ -60,10 +60,12 @@ module MenuFlyout =
     type MenuFlyout with
 
         static member viewItems<'t when 't :> MenuFlyout>(views: List<IView>): IAttr<'t> =
-            AttrBuilder<'t>.CreateContentMultiple(MenuFlyout.ItemsProperty, views)
+            let getter : ('t -> obj) = (fun control -> control.Items :> obj)
+
+            AttrBuilder<'t>.CreateContentMultiple("Items", ValueSome getter, ValueNone, views)
 
         static member dataItems<'t when 't :> MenuFlyout>(data : IEnumerable): IAttr<'t> =
-            AttrBuilder<'t>.CreateProperty<IEnumerable>(MenuFlyout.ItemsProperty, data, ValueNone)
+            AttrBuilder<'t>.CreateProperty<IEnumerable>(MenuFlyout.ItemsSourceProperty, data, ValueNone)
 
         static member itemTemplate<'t when 't :> MenuFlyout>(value : IDataTemplate): IAttr<'t> =
             AttrBuilder<'t>.CreateProperty<IDataTemplate>(MenuFlyout.ItemTemplateProperty, value, ValueNone)

@@ -6,36 +6,36 @@ module Counter =
     open Avalonia.FuncUI.DSL
     open Avalonia.Layout
 
+    let buttonStyles: Types.IAttr<Button> list =  [
+        Button.width 64
+        Button.fontSize 16.0
+        Button.horizontalAlignment HorizontalAlignment.Center
+        Button.horizontalContentAlignment HorizontalAlignment.Center
+        Button.margin 2.
+    ]
+
     let view =
         Component(fun ctx ->
             let state = ctx.useState 0
             DockPanel.create [
-                DockPanel.verticalAlignment VerticalAlignment.Center
-                DockPanel.horizontalAlignment HorizontalAlignment.Center
                 DockPanel.children [
                     Button.create [
-                        Button.width 64
-                        Button.horizontalAlignment HorizontalAlignment.Center
-                        Button.horizontalContentAlignment HorizontalAlignment.Center
+                        Button.dock Dock.Bottom
                         Button.content "Reset"
                         Button.onClick (fun _ -> state.Set 0)
-                        Button.dock Dock.Bottom
+                        yield! buttonStyles
                     ]
                     Button.create [
-                        Button.width 64
-                        Button.horizontalAlignment HorizontalAlignment.Center
-                        Button.horizontalContentAlignment HorizontalAlignment.Center
+                        Button.dock Dock.Bottom
                         Button.content "-"
                         Button.onClick (fun _ -> state.Current - 1 |> state.Set)
-                        Button.dock Dock.Bottom
+                        yield! buttonStyles
                     ]
                     Button.create [
-                        Button.width 64
-                        Button.horizontalAlignment HorizontalAlignment.Center
-                        Button.horizontalContentAlignment HorizontalAlignment.Center
+                        Button.dock Dock.Bottom
                         Button.content "+"
                         Button.onClick (fun _ -> state.Current + 1 |> state.Set)
-                        Button.dock Dock.Bottom
+                        yield! buttonStyles
                     ]
                     TextBlock.create [
                         TextBlock.dock Dock.Top

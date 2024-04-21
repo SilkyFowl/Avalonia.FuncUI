@@ -13,12 +13,12 @@ module internal rec Patcher =
     open Avalonia.FuncUI.Types
     open System.Threading
 
-    let private shouldPatch (value: obj) (viewElement: ViewDelta) =
+    let private shouldPatch (value: obj, viewElement: ViewDelta) =
          value <> null
          && value.GetType() = viewElement.ViewType
          && not viewElement.KeyDidChange
 
-    let private patchSubscription (view: Control) (attr: SubscriptionDelta) : unit =
+    let private patchSubscription (view: Control, attr: SubscriptionDelta) : unit =
         let subscriptions =
             match ViewMetaData.GetViewSubscriptions(view) with
             | null ->
@@ -48,7 +48,7 @@ module internal rec Patcher =
                 value.Cancel()
                 subscriptions.TryRemove(attr.UniqueName) |> ignore
 
-    let internal patchProperty (view: AvaloniaObject) (attr: PropertyDelta) : unit =
+    let internal patchProperty (view: AvaloniaObject, attr: PropertyDelta) : unit =
         match attr.Accessor with
         | Accessor.AvaloniaProperty avaloniaProperty ->
             match attr.Value with
@@ -81,20 +81,20 @@ module internal rec Patcher =
 
             match instanceProperty.Setter with
             | ValueSome setter -> setter (view, value)
-            | ValueNone _ -> failwithf "instance property ('%s') has no setter. " instanceProperty.Name
+            | ValueNone -> failwithf "instance property ('%s') has no setter. " instanceProperty.Name
 
-    let private patchContentMultiple (view: AvaloniaObject) (accessor: Accessor) (delta: ViewDelta list) : unit =
+    let private patchContentMultiple (view: AvaloniaObject, accessor: Accessor, delta: ViewDelta list) : unit =
         (* often lists only have a get accessor *)
         let patch_IList (collection: IList) : unit =
             if List.isEmpty delta then
                 collection.Clear()
             else
-                delta |> Seq.iteri (fun index viewElement ->
+                delta |> List.iteri (fun index viewElement ->
                     // try patch / reuse
                     if index + 1 <= collection.Count then
                         let item = collection.[index]
 
-                        if shouldPatch item viewElement then
+                        if shouldPatch (item, viewElement) then
                             // patch
                             match item with
                             | :? AvaloniaObject as control -> patch(control, viewElement)
@@ -126,11 +126,11 @@ module internal rec Patcher =
 
             (newList :> IEnumerable)
 
-        let patch (getValue: (unit -> obj) option, setValue: (obj -> unit) option) =
+        let patch (getValue: (unit -> obj) voption, setValue: (obj -> unit) voption) =
             let value =
                 match getValue with
-                | Some get -> get()
-                | _ -> failwith "accessor must have a getter"
+                | ValueSome get -> get()
+                | ValueNone -> failwith "accessor must have a getter"
 
             match value with
             | :? IList as collection ->
@@ -138,8 +138,8 @@ module internal rec Patcher =
 
             | :? IEnumerable as enumerable ->
                 match setValue with
-                | Some set -> set (patch_IEnumerable enumerable)
-                | _ -> failwith "accessor must have a setter"
+                | ValueSome set -> set (patch_IEnumerable enumerable)
+                | ValueNone -> failwith "accessor must have a setter"
 
             | _ -> raise (Exception("type does not implement IEnumerable or IList. This is required for view patching"))
 
@@ -147,29 +147,29 @@ module internal rec Patcher =
         | Accessor.InstanceProperty instanceProperty ->
             let getter =
                 match instanceProperty.Getter with
-                | ValueSome getter -> Some (fun () -> getter(view))
-                | ValueNone -> None
+                | ValueSome getter -> ValueSome (fun () -> getter(view))
+                | ValueNone -> ValueNone
 
             let setter =
                 match instanceProperty.Setter with
-                | ValueSome setter -> Some (fun value -> setter(view, value))
-                | ValueNone -> None
+                | ValueSome setter -> ValueSome (fun value -> setter(view, value))
+                | ValueNone -> ValueNone
 
             patch (getter ,setter)
 
         | Accessor.AvaloniaProperty property ->
-            let getter = Some (fun () -> view.GetValue(property))
-            let setter = Some (fun obj -> view.SetValue(property, obj) |> ignore)
+            let getter = ValueSome (fun () -> view.GetValue(property))
+            let setter = ValueSome (fun obj -> view.SetValue(property, obj) |> ignore)
             patch (getter, setter)
 
-    let private patchContentSingle (view: AvaloniaObject) (accessor: Accessor) (viewElement: ViewDelta option) : unit =
+    let private patchContentSingle (view: AvaloniaObject, accessor: Accessor, viewElement: ViewDelta option) : unit =
 
         let patch_avalonia (property: AvaloniaProperty) =
             match viewElement with
             | Some viewElement ->
                 let value = view.GetValue(property)
 
-                if shouldPatch value viewElement then
+                if shouldPatch (value, viewElement) then
                     Patcher.patch(value :?> AvaloniaObject, viewElement)
                 else
                     let createdControl = Patcher.create viewElement
@@ -186,7 +186,7 @@ module internal rec Patcher =
                     | ValueSome getter -> getter(view)
                     | _ -> failwith "Property Accessor needs a getter"
 
-                if shouldPatch value viewElement then
+                if shouldPatch (value, viewElement) then
                     Patcher.patch(value :?> AvaloniaObject, viewElement)
                 else
                     let createdControl = Patcher.create(viewElement)
@@ -203,22 +203,22 @@ module internal rec Patcher =
         | Accessor.InstanceProperty instanceProperty -> patch_instance instanceProperty
         | Accessor.AvaloniaProperty property -> patch_avalonia property
 
-    let private patchContent (view: AvaloniaObject) (attr: ContentDelta) : unit =
+    let private patchContent (view: AvaloniaObject, attr: ContentDelta) : unit =
         match attr.Content with
         | ViewContentDelta.Single single ->
-            patchContentSingle view attr.Accessor single
+            patchContentSingle (view, attr.Accessor, single)
         | ViewContentDelta.Multiple multiple ->
-            patchContentMultiple view attr.Accessor multiple
+            patchContentMultiple (view, attr.Accessor, multiple)
 
     let patch (view: AvaloniaObject, viewElement: ViewDelta) : unit =
         for attr in viewElement.Attrs do
             match attr with
-            | AttrDelta.Property property -> patchProperty view property
-            | AttrDelta.Content content -> patchContent view content
+            | AttrDelta.Property property -> patchProperty (view, property)
+            | AttrDelta.Content content -> patchContent (view, content)
             | AttrDelta.Subscription subscription ->
                 match view with
                 | :? Control as control ->
-                    patchSubscription control subscription
+                    patchSubscription (control, subscription)
                 | _ -> failwith "Only controls can have subscriptions"
             | AttrDelta.SetupFunction _ ->
                 // setup/init functions are only called on control creation
@@ -243,9 +243,9 @@ module internal rec Patcher =
 
         for attr in viewElement.Attrs do
             match attr with
-            | AttrDelta.Content content -> Patcher.patchContent control content
-            | AttrDelta.Subscription s -> Patcher.patchSubscription (control :?> Control) s
-            | AttrDelta.Property property -> Patcher.patchProperty control property
+            | AttrDelta.Content content -> Patcher.patchContent (control, content)
+            | AttrDelta.Subscription s -> Patcher.patchSubscription ((control :?> Control), s)
+            | AttrDelta.Property property -> Patcher.patchProperty (control, property)
             | AttrDelta.SetupFunction setupFunction -> setupFunction.Function(control)
 
         control

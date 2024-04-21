@@ -16,18 +16,18 @@ type MainWindow() as this =
         base.Title <- "BasicMvuTemplate"
         base.Width <- 400.0
         base.Height <- 400.0
-        
-        //this.VisualRoot.VisualRoot.Renderer.DrawFps <- true
-        //this.VisualRoot.VisualRoot.Renderer.DrawDirtyRects <- true
+//-:cnd
 #if DEBUG
         this.AttachDevTools(KeyGesture(Key.F12))
 #endif
-
+//+:cnd
         Elmish.Program.mkSimple Counter.init Counter.update Counter.view
         |> Program.withHost this
+//-:cnd
 #if DEBUG
         |> Program.withConsoleTrace
 #endif
+//+:cnd
         |> Program.run
 
         
@@ -35,7 +35,7 @@ type App() =
     inherit Application()
 
     override this.Initialize() =
-        this.Styles.Add (FluentTheme(baseUri = null, Mode = FluentThemeMode.Dark))
+        this.Styles.Add (FluentTheme())
 
     override this.OnFrameworkInitializationCompleted() =
         match this.ApplicationLifetime with
@@ -50,5 +50,4 @@ module Program =
         AppBuilder
             .Configure<App>()
             .UsePlatformDetect()
-            .UseSkia()
             .StartWithClassicDesktopLifetime(args)
