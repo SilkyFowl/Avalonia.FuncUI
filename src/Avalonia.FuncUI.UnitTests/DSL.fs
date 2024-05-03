@@ -66,7 +66,7 @@ let ``check TypeMemberInfo report`` () =
         |> Array.map (fun x -> x.TypeMemberInfo)
         |> TypeMemberInfoTree.build
 
-    let avaloniaObjInheritTreeStr = TypeMemberInfoTree.sprintMd avaloniaObjInheritTree
+    let avaloniaObjInheritTreeStr = TypeMemberInfoTree.sprintMdReport avaloniaObjInheritTree
 
     let havaAvaloniaPropTypesStr =
         havaAvaloniaPropTypes

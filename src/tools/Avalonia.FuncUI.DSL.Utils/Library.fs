@@ -478,57 +478,75 @@ module TypeMemberInfoTree =
         else
             tree
 
-    let sprintMd (tree: TypeMemberInfoTree) =
-        let rec loop (path: string list) (tree: TypeMemberInfoTree) =
-            let inheritPath =
-                match path with
-                | [] -> ""
-                | path -> String.concat " <- " path |> sprintf "base: %s"
+    let sprintMdReport (tree: TypeMemberInfoTree) =
+        let pathStr str =
+            let link = Regex.replace "[<|>|']" "" str
+            $"[{str}](#{link})"
 
-            match tree with
-            | Leaf x ->
-                let name = TypeMemberInfo.sprintTypeName x
-                let header = $"## {name}"
+        let linkedList =
+            let rec loop level (tree: TypeMemberInfoTree) =
+                let indent = String.replicate level "  "
 
-                String.concat
-                    "\n\n"
-                    [ header
-                      if inheritPath <> "" then
-                          inheritPath
-                      TypeMemberInfo.sprintCodeBlock x ]
+                match tree with
+                | Leaf x -> $"{indent}- [ ] {TypeMemberInfo.sprintTypeName x |> pathStr}"
+                | Node(x, children) ->
+                    let parentName = TypeMemberInfo.sprintTypeName x
+                    let childrenStr = children |> List.map (loop (level + 1)) |> String.concat "\n"
 
-            | Node(x, children) ->
-                let parentName = TypeMemberInfo.sprintTypeName x
-                let pathStr str =
-                    let link = Regex.replace "[<|>|']" "" str
-                    $"[{str}](#{link})"
-                let path =
-                    pathStr parentName :: path
+                    $"{indent}- [ ] {parentName |> pathStr}\n{childrenStr}"
 
-                let childLinks =
-                    children
-                    |> List.map (function
-                        | Leaf x -> x
-                        | Node(x, _) -> x)
-                    |> List.map TypeMemberInfo.sprintTypeName
-                    |> List.map pathStr
-                    |> String.concat ", "
-                    |> sprintf "Children: %s"
+            loop 0 tree
 
-                let childrenStr = children |> List.map (loop path) |> String.concat "\n\n"
+        let report =
+            let rec loop (path: string list) (tree: TypeMemberInfoTree) =
+                let inheritPath =
+                    match path with
+                    | [] -> ""
+                    | path -> String.concat " <- " path |> sprintf "base: %s"
 
-                let header = $"## {parentName}"
+                match tree with
+                | Leaf x ->
+                    let name = TypeMemberInfo.sprintTypeName x
+                    let header = $"## {name}"
 
-                String.concat
-                    "\n\n"
-                    [ header
-                      if inheritPath <> "" then
-                          inheritPath
-                      childLinks
-                      TypeMemberInfo.sprintCodeBlock x
-                      childrenStr ]
+                    String.concat
+                        "\n\n"
+                        [ header
+                          if inheritPath <> "" then
+                              inheritPath
+                          TypeMemberInfo.sprintCodeBlock x ]
 
-        loop [] tree
+                | Node(x, children) ->
+                    let parentName = TypeMemberInfo.sprintTypeName x
+
+                    let path = pathStr parentName :: path
+
+                    let childLinks =
+                        children
+                        |> List.map (function
+                            | Leaf x -> x
+                            | Node(x, _) -> x)
+                        |> List.map TypeMemberInfo.sprintTypeName
+                        |> List.map pathStr
+                        |> String.concat ", "
+                        |> sprintf "Children: %s"
+
+                    let childrenStr = children |> List.map (loop path) |> String.concat "\n\n"
+
+                    let header = $"## {parentName}"
+
+                    String.concat
+                        "\n\n"
+                        [ header
+                          if inheritPath <> "" then
+                              inheritPath
+                          childLinks
+                          TypeMemberInfo.sprintCodeBlock x
+                          childrenStr ]
+
+            loop [] tree
+
+        String.concat "\n\n" [ linkedList; report ]
 
 type AvaloniaDslType =
     | AssignableToAvanloniaObject of TypeMemberInfo
