@@ -35,6 +35,7 @@
   <ItemGroup>
     <Compile Include="Assembly.fs" />
     <Compile Include="Library.fs" />
+    <Compile Include="Types.fsi" />
     <Compile Include="Types.fs" />
     <Compile Include="VirtualDom\VirtualDom.Misc.fs" />
     <Compile Include="VirtualDom\VirtualDom.Delta.fs" />
@@ -54,9 +55,13 @@
     <Compile Include="Hosts.fs" />
     <Compile Include="DataTemplateView.fs" />
     <Compile Include="Helpers.fs" />
+    <Compile Include="DSL\ViewBuilder.fsi" />
     <Compile Include="DSL\ViewBuilder.fs" />
+    <Compile Include="DSL\AttrBuilder.fsi" />
     <Compile Include="DSL\AttrBuilder.fs" />
+    <Compile Include="DSL\View.fsi" />
     <Compile Include="DSL\View.fs" />
+    <Compile Include="DSL\Base\AvaloniaObject.fsi" />
     <Compile Include="DSL\Base\AvaloniaObject.fs" />
 
 

@@ -82,8 +82,8 @@ module rec Types =
     type InitFunction =
         { Function: obj -> unit }
 
-        override this.Equals (obj: obj) =
-            Object.ReferenceEquals (this, obj)
+        override this.Equals (other: obj) =
+            Object.ReferenceEquals (this, other)
 
         override this.GetHashCode () =
             (this.Function :> obj).GetHashCode()
