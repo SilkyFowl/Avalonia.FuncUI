@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net6.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     </PropertyGroup>
 
     <ItemGroup>
@@ -27,6 +28,7 @@
         <Compile Include="Views\Tabs\WindowMenuDemo.fs" />
         <Compile Include="Views\Tabs\FlyoutDemo.fs" />
         <Compile Include="Views\Tabs\DragDropDemo.fs" />
+        <Compile Include="Views\Tabs\AttachedEventDemo.fs" />
         <Compile Include="Views\MainView.fs" />
 		<Compile Include="ControlCatalog.fs" />
         <AvaloniaResource Include="**\*.xaml" />
@@ -39,7 +41,7 @@
 
     <ItemGroup>
       <PackageReference Include="Avalonia.Themes.Fluent" Version="$(AvaloniaVersion)" />
-      <PackageReference Include="Bogus" Version="28.4.1" />
+      <PackageReference Include="Bogus" Version="35.6.0" />
     </ItemGroup>
 
 </Project>

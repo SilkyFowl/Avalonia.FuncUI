@@ -44,6 +44,9 @@ module MenuItem =
         static member isSubMenuOpen<'t when 't :> MenuItem>(value: bool) : IAttr<'t> =
             AttrBuilder<'t>.CreateProperty<bool>(MenuItem.IsSubMenuOpenProperty, value, ValueNone)
 
+        static member staysOpenOnClick<'t when 't :> MenuItem>(value: bool) : IAttr<'t> =
+            AttrBuilder<'t>.CreateProperty<bool>(MenuItem.StaysOpenOnClickProperty, value, ValueNone)
+
         static member onIsSubMenuOpenChanged<'t when 't :> MenuItem>(func: bool -> unit, ?subPatchOptions) =
             AttrBuilder<'t>.CreateSubscription<bool>(MenuItem.IsSubMenuOpenProperty, func, ?subPatchOptions = subPatchOptions)
 
@@ -58,3 +61,12 @@ module MenuItem =
 
         static member onSubMenuOpened<'t when 't :> MenuItem>(func: RoutedEventArgs -> unit, ?subPatchOptions) =
             AttrBuilder<'t>.CreateSubscription<RoutedEventArgs>(MenuItem.SubmenuOpenedEvent, func, ?subPatchOptions = subPatchOptions)
+
+        static member toggleType<'t when 't :> MenuItem>(toggleType: MenuItemToggleType) : IAttr<'t> =
+            AttrBuilder<'t>.CreateProperty<MenuItemToggleType>(MenuItem.ToggleTypeProperty, toggleType, ValueNone)
+
+        static member isChecked<'t when 't :> MenuItem>(isChecked: bool) : IAttr<'t> =
+            AttrBuilder<'t>.CreateProperty<bool>(MenuItem.IsCheckedProperty, isChecked, ValueNone)
+
+        static member groupName<'t when 't :> MenuItem>(groupName: string) : IAttr<'t> =
+            AttrBuilder<'t>.CreateProperty<string>(MenuItem.GroupNameProperty, groupName, ValueNone)
